@@ -1,0 +1,74 @@
+@model List<User>
+@{
+    ViewData["Title"] = "User Management";
+    var currentUserId = (int)ViewBag.CurrentUserId;
+}
+
+<h2 class="mb-3">User Management</h2>
+
+<form method="post" asp-action="BulkAction">
+    <div class="d-flex justify-content-between mb-2">
+        <div>
+            <input type="checkbox" id="select-all" /> Select All
+        </div>
+        <div class="btn-toolbar gap-2">
+            <button name="actionType" value="block" class="btn btn-warning btn-sm">Block</button>
+            <button name="actionType" value="unblock" class="btn btn-outline-success btn-sm" title="Unblock">
+                ✅
+            </button>
+            <button name="actionType" value="delete" class="btn btn-outline-danger btn-sm" title="Delete">
+                🗑️
+            </button>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-light">
+            <tr>
+                <th><input type="checkbox" id="select-all-header" /></th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Last Login</th>
+                <th>Registered</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>
+                    <input type="checkbox" name="selectedIds" value="@user.Id" />
+                </td>
+                <td>@user.Name</td>
+                <td>@user.Email</td>
+                <td>
+                    <span class="badge @(user.Status == "Active" ? "bg-success" : "bg-secondary")">
+                        @user.Status
+                    </span>
+                </td>
+                <td>@user.LastLoginTime?.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@user.RegisteredAt.ToString("yyyy-MM-dd")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</form>
+
+<a href="/Account/Logout" class="btn btn-outline-dark">Logout</a>
+
+@section Scripts {
+    <script>
+        document.getElementById('select-all').addEventListener('click', function () {
+            const checked = this.checked;
+            document.querySelectorAll('input[name="selectedIds"]').forEach(cb => cb.checked = checked);
+            document.getElementById('select-all-header').checked = checked;
+        });
+
+        document.getElementById('select-all-header').addEventListener('click', function () {
+            const checked = this.checked;
+            document.querySelectorAll('input[name="selectedIds"]').forEach(cb => cb.checked = checked);
+            document.getElementById('select-all').checked = checked;
+        });
+    </script>
+}

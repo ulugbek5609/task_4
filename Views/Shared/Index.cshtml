@@ -1,0 +1,66 @@
+@model List<User>
+@{
+    ViewData["Title"] = "User Management";
+    var currentUserId = (int)ViewBag.CurrentUserId;
+}
+
+<h2>User Management</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<form asp-action="BulkAction" method="post">
+    <div class="d-flex gap-2 mb-3">
+        <input type="hidden" name="action" id="actionField" />
+        <button type="submit" class="btn btn-secondary" onclick="setAction('block')" title="Block selected users">Block</button>
+        <button type="submit" class="btn btn-outline-success" onclick="setAction('unblock')" title="Unblock selected users">
+            <i class="bi bi-unlock"></i>
+        </button>
+        <button type="submit" class="btn btn-outline-danger" onclick="setAction('delete')" title="Delete selected users">
+            <i class="bi bi-trash"></i>
+        </button>
+    </div>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>
+                    <input type="checkbox" id="selectAll" />
+                </th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Last Login</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>
+                    <input type="checkbox" name="selectedUserIds" value="@user.Id" />
+                </td>
+                <td>@user.Name</td>
+                <td>@user.Email</td>
+                <td>@(user.LastLoginTime?.ToLocalTime().ToString("g") ?? "-")</td>
+                <td>@user.Status</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</form>
+
+@section Scripts {
+<script>
+    function setAction(actionName) {
+        document.getElementById("actionField").value = actionName;
+    }
+
+    document.getElementById("selectAll").addEventListener("change", function () {
+        const checkboxes = document.querySelectorAll('input[name="selectedUserIds"]');
+        checkboxes.forEach(cb => cb.checked = this.checked);
+    });
+</script>
+}
